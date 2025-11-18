@@ -6,6 +6,7 @@ int main() {
 
 
     cout << "Hello, World!" << endl;
+    cout << "Hello this is Juanita Leonard" << endl;
 
     return 0;
 }
