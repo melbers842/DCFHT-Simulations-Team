@@ -5,13 +5,17 @@
 #ifndef MESHTEST_H
 #define MESHTEST_H
 
+#include <Eigen/Dense>
+#include <string>
+//using Eigen::MatrixXd; or using namespace Eigen;
+
 // This class represents a 2D (later 3D) mesh for the Hall thruster simulation
 class Mesh {
-public:
+private:
     // Grid dimensions
-    int Nx, Ny;          // Number of nodes in X and Y
-    double dx, dy;       // Grid spacing
-    double xmin, ymin;   // Grid origin coordinates
+    int xN, yN;          // Number of nodes in X and Y
+    double xD, yD;       // Grid spacing
+    double minX, minY;   // Grid origin coordinates
 
     // Physical properties stored at each mesh node
     // Each Eigen::MatrixXd is Nx x Ny (2D)
@@ -31,34 +35,36 @@ public:
     Eigen::MatrixXd electronTemperature; // Electron temperature
     Eigen::MatrixXd voltagePotential;    // Electric potential at nodes
 
+public:
+
     // Constructor: initializes the mesh and allocates storage
-    Mesh(int nx, int ny, double dx, double dy, double xmin=0.0, double ymin=0.0);
+    Mesh(int nx, int ny, double dx, double dy, double xmin, double ymin);
 
     // Initialize all fields to default values
     // TODO: later replace with real initial conditions
-    void initializeFields();
+    void static initializeFields();
 
     // Print mesh info for debugging
     void printInfo() const;
 
     // Placeholder: update velocities of particles
     // TODO: will be implemented in solver
-    void updateVelocities();
+    void static updateVelocities();
 
     // Placeholder: update densities
     // TODO: will be implemented in solver
-    void updateDensities();
+    void static updateDensities();
 
     // Placeholder: update electric potential
     // TODO: solve Poisson's equation in solver
-    void updatePotential();
+    void static updatePotential();
 
     // Placeholder: update electron temperature
-    void updateElectronTemperature();
+    void static updateElectronTemperature();
 
     // Optional: save mesh state to file for later visualization
     // TODO: implement in io.hpp/io.cpp
     void saveMeshToFile(const std::string& filename) const;
 };
 
-#endif //URIMESHPRACTICE_MESHTEST_H
+#endif //MESHTEST_H
