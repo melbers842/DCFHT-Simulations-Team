@@ -22,3 +22,5 @@ add_executable(URIMeshPractice
         MeshTest.cpp)
 
 target_link_libraries(URIMeshPractice PRIVATE Eigen3::Eigen)
+
+add_executable(vtu_demo vtu_demo_main.cpp)
