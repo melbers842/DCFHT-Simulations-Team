@@ -23,23 +23,32 @@
 #include <cstddef>
 
 template <int D>
+
 struct Vec {
     std::array<double, D> c{};
 
     constexpr Vec() = default;
 
     // 2-D convenience constructor.
-    constexpr Vec(double a, double b) requires(D == 2) : c{a, b} {}
+    constexpr Vec(double a, double b) requires(D == 2) : c{a, b} {} // Creates 2D array
 
     // 3-D convenience constructor.
     constexpr Vec(double a, double b, double d) requires(D == 3) : c{a, b, d} {}
 
+    //We will research this later
     double&       operator[](int i)       { return c[static_cast<std::size_t>(i)]; }
     const double& operator[](int i) const { return c[static_cast<std::size_t>(i)]; }
 
+    //Overloading operators to do the math at each index of array c
+    //Vec ar
+    // c = {2, 3}
+    // Vec ce
+    // ce = {4, 6}
+    // ar += ce; --- {2 * 4, 3 * 6} = ar
     Vec& operator+=(const Vec& o) { for (int i = 0; i < D; ++i) c[i] += o.c[i]; return *this; }
     Vec& operator-=(const Vec& o) { for (int i = 0; i < D; ++i) c[i] -= o.c[i]; return *this; }
     Vec& operator*=(double s)     { for (int i = 0; i < D; ++i) c[i] *= s;      return *this; }
+
 
     double dot(const Vec& o) const {
         double s = 0.0;
@@ -47,6 +56,7 @@ struct Vec {
         return s;
     }
 
+    //taking magnitude of Vector
     double normSquared() const { return dot(*this); }
     double norm()        const { return std::sqrt(normSquared()); }
 

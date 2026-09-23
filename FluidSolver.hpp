@@ -416,7 +416,7 @@ public:
         using namespace constants;
         if (n_e <= 0.0) return 1.0;
         const double omega_pe = std::sqrt(n_e * kElementaryCharge * kElementaryCharge
-                                          / (kEpsilon0 * kElectronMass));
+                                          / (kEpsilon_0 * kElectronMass));
         return 2.0 * kPi / omega_pe;
     }
 

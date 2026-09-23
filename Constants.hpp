@@ -17,14 +17,14 @@
 namespace constants {
 
 // --- universal ------------------------------------------------------------
-inline constexpr double kElementaryCharge = 1.602176634e-19;  // C
+inline constexpr double kElementaryCharge = 1.602176634e-19;  // Coulomb's constant
 inline constexpr double kBoltzmann        = 1.380649e-23;     // J/K
 inline constexpr double kElectronMass     = 9.1093837015e-31; // kg
-inline constexpr double kEpsilon0         = 8.8541878128e-12; // F/m
-inline constexpr double kAmu              = 1.66053906660e-27;// kg
+inline constexpr double kEpsilon_0        = 8.8541878128e-12; // F/m
+inline constexpr double kAmu              = 1.66053906660e-27;// kg Atomic Mass Unit
 inline constexpr double kPi               = 3.14159265358979323846;
 
-// --- xenon propellant -----------------------------------------------------
+// --- xenon propellant ----------------------------------------------------- MIGHT NEED TO CHANGE DEPENDING ON BUILD STATUS (CO2)
 inline constexpr double kXenonMass        = 131.293 * kAmu;   // kg
 inline constexpr double kXenonIonizationEnergy = 12.1298;     // eV (E_i in Eq. 13.26)
 

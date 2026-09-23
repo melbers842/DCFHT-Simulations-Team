@@ -25,31 +25,40 @@
 
 template <int D>
 class Mesh {
+
+private:
+    std::array<int, D>    nodeCount_;
+    std::array<double, D> x0_; //X initial
+    std::array<double, D> dx_; //spacing
+    int                   total_ = 0;
+
 public:
     Mesh(std::array<int, D> nodeCounts,
          std::array<double, D> origin,
          std::array<double, D> spacing)
-        : n_(nodeCounts), x0_(origin), dx_(spacing) {
+        : nodeCount_(nodeCounts), x0_(origin), dx_(spacing) {
         total_ = 1;
+        //
         for (int d = 0; d < D; ++d) {
             assert(n_[static_cast<std::size_t>(d)] >= 2 && "each axis needs at least 2 nodes");
             assert(dx_[static_cast<std::size_t>(d)] > 0.0 && "spacing must be positive");
-            total_ *= n_[static_cast<std::size_t>(d)];
+            total_ *= nodeCount_[static_cast<std::size_t>(d)];
         }
     }
 
     int  numNodes()          const { return total_; }
-    int  count(int d)        const { return n_[static_cast<std::size_t>(d)]; }
+    int  count(int d)        const { return nodeCount_[static_cast<std::size_t>(d)]; }
     double spacing(int d)    const { return dx_[static_cast<std::size_t>(d)]; }
     double origin(int d)     const { return x0_[static_cast<std::size_t>(d)]; }
 
     // --- index <-> multi-index ---------------------------------------------
+    //Flatten from 3D to 2D
     int flatten(const std::array<int, D>& idx) const {
         int flat = 0;
         int stride = 1;
         for (int d = 0; d < D; ++d) {
             flat += idx[static_cast<std::size_t>(d)] * stride;
-            stride *= n_[static_cast<std::size_t>(d)];
+            stride *= nodeCount_[static_cast<std::size_t>(d)];
         }
         return flat;
     }
@@ -57,8 +66,8 @@ public:
     std::array<int, D> unflatten(int flat) const {
         std::array<int, D> idx{};
         for (int d = 0; d < D; ++d) {
-            idx[static_cast<std::size_t>(d)] = flat % n_[static_cast<std::size_t>(d)];
-            flat /= n_[static_cast<std::size_t>(d)];
+            idx[static_cast<std::size_t>(d)] = flat % nodeCount_[static_cast<std::size_t>(d)];
+            flat /= nodeCount_[static_cast<std::size_t>(d)];
         }
         return idx;
     }
@@ -78,7 +87,7 @@ public:
         const auto idx = unflatten(flat);
         for (int d = 0; d < D; ++d) {
             if (idx[static_cast<std::size_t>(d)] == 0 ||
-                idx[static_cast<std::size_t>(d)] == n_[static_cast<std::size_t>(d)] - 1) {
+                idx[static_cast<std::size_t>(d)] == nodeCount_[static_cast<std::size_t>(d)] - 1) {
                 return true;
             }
         }
@@ -89,7 +98,7 @@ public:
     int neighbour(int flat, int d, int offset) const {
         auto idx = unflatten(flat);
         const int moved = idx[static_cast<std::size_t>(d)] + offset;
-        if (moved < 0 || moved >= n_[static_cast<std::size_t>(d)]) return -1;
+        if (moved < 0 || moved >= nodeCount_[static_cast<std::size_t>(d)]) return -1;
         idx[static_cast<std::size_t>(d)] = moved;
         return flatten(idx);
     }
@@ -177,10 +186,4 @@ public:
                                         ? dx_[static_cast<std::size_t>(d)] : m;
         return m;
     }
-
-private:
-    std::array<int, D>    n_;
-    std::array<double, D> x0_;
-    std::array<double, D> dx_;
-    int                   total_ = 0;
 };
