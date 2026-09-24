@@ -2,3 +2,4 @@
 cmake-build-*/
 build/
 out_*.vtu
+field_*.vti

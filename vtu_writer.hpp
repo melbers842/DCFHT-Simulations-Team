@@ -27,6 +27,16 @@
 #include <vector>
 
 class VtuWriter {
+private:
+    struct Field {
+        std::string name;
+        std::vector<double> values;
+    };
+
+    std::vector<double> points_;
+    std::vector<Field> scalars_;
+    std::vector<Field> vectors_;
+
 public:
     // Add one particle position. Use z = 0.0 for a 2-D simulation;
     // ParaView always works in 3-D internally.
@@ -142,16 +152,6 @@ public:
         out << "  </UnstructuredGrid>\n";
         out << "</VTKFile>\n";
     }
-
-private:
-    struct Field {
-        std::string name;
-        std::vector<double> values;
-    };
-
-    std::vector<double> points_;
-    std::vector<Field> scalars_;
-    std::vector<Field> vectors_;
 };
 
 // Build a zero-padded time-series filename, e.g. makeFilename("out", 42) -> "out_0042.vtu".
