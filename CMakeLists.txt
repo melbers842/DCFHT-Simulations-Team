@@ -19,7 +19,7 @@ FetchContent_MakeAvailable(Eigen)
 
 add_executable(URIMeshPractice
         main.cpp
-        MeshTest.cpp)
+)
 
 target_link_libraries(URIMeshPractice PRIVATE Eigen3::Eigen)
 
