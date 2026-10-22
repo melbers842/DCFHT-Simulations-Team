@@ -40,7 +40,7 @@ public:
         total_ = 1;
         //
         for (int d = 0; d < D; ++d) {
-            assert(n_[static_cast<std::size_t>(d)] >= 2 && "each axis needs at least 2 nodes");
+            assert(nodeCount_[static_cast<std::size_t>(d)] >= 2 && "each axis needs at least 2 nodes");
             assert(dx_[static_cast<std::size_t>(d)] > 0.0 && "spacing must be positive");
             total_ *= nodeCount_[static_cast<std::size_t>(d)];
         }
