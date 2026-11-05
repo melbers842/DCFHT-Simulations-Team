@@ -49,8 +49,7 @@ struct Vec {
     Vec& operator-=(const Vec& o) { for (int i = 0; i < D; ++i) c[i] -= o.c[i]; return *this; }
     Vec& operator*=(double s)     { for (int i = 0; i < D; ++i) c[i] *= s;      return *this; }
 
-
-    double dot(const Vec& o) const {
+    double dot(const Vec& o) const { // dot product
         double s = 0.0;
         for (int i = 0; i < D; ++i) s += c[i] * o.c[i];
         return s;
@@ -88,7 +87,7 @@ inline Vec<2> crossFromOutOfPlane(double w, const Vec<2>& b) {
     return Vec<2>{ w * b[1], -w * b[0] };
 }
 
-// Full 3-D cross product, used when kDim == 3.
+// Full 3-D cross product, used when kDim == 3. WILL NOT BE USED
 inline Vec<3> cross(const Vec<3>& a, const Vec<3>& b) {
     return Vec<3>{ a[1] * b[2] - a[2] * b[1],
                    a[2] * b[0] - a[0] * b[2],

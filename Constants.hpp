@@ -18,9 +18,9 @@ namespace constants {
 
 // --- universal ------------------------------------------------------------
 inline constexpr double kElementaryCharge = 1.602176634e-19;  // Coulomb's constant
-inline constexpr double kBoltzmann        = 1.380649e-23;     // J/K
+inline constexpr double kBoltzmann        = 1.380649e-23;     // J/K  Boltzmann's Constant
 inline constexpr double kElectronMass     = 9.1093837015e-31; // kg
-inline constexpr double kEpsilon_0        = 8.8541878128e-12; // F/m
+inline constexpr double kEpsilon_0        = 8.8541878128e-12; // F/m Vacuum Permitivity
 inline constexpr double kAmu              = 1.66053906660e-27;// kg Atomic Mass Unit
 inline constexpr double kPi               = 3.14159265358979323846;
 

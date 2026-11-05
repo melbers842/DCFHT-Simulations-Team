@@ -26,3 +26,5 @@ target_link_libraries(URIMeshPractice PRIVATE Eigen3::Eigen)
 add_executable(vtu_demo vtu_demo_main.cpp)
 
 add_executable(fluid_demo fluid_demo_main.cpp)
+
+add_executable(geometry_check geometry_check_main.cpp)

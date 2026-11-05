@@ -18,7 +18,7 @@
 // converged solution rather than the result of an integration.
 //
 //   continuity   d n_s/dt + div(n_s v_s) = +/- n_e nu_i        (from 13.22)
-//   ion mom.     see ionMomentumRHS()                          (from 13.24)
+//   ion mom.     see ionMomentumRHS()                          (fom 13.24)
 //   neutral mom. see neutralMomentumRHS()                      (from 13.25)
 //   electron mom. inertialess drift-diffusion, see electronVelocity()  (13.23)
 //   electron en. see electronEnergyRHS()                       (from 13.26)
