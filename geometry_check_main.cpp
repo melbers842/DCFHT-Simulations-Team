@@ -8,10 +8,10 @@
 int main() {
 
     ChannelGeometry placeholderGeometry{
-        0.021,   // innerRadius, m
-        0.028,   // outerRadius, m
-        0.025,   // length, m
-        30.0     // divergenceAngleDeg
+        0.010,   // innerRadius, m, 10mm
+        0.038579,   // outerRadius, m, 38.579 mm
+        0.0495,   // length, m, 49.5 mm
+        60.0     // divergenceAngleDeg
     };
 
     std::cout << "max valid total angle: " << placeholderGeometry.maxValidAngleDeg() << " deg" << std::endl;

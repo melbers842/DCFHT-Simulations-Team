@@ -1,82 +1,94 @@
+#pragma once
 //
-// Created by Angel Madrigal on 10/21/26.
+// ChannelGeometry.hpp
+//
+// Geometry of the DCFHT discharge channel: a cone of revolution about the
+// thruster axis, opening downstream.
+//
+// GEOMETRY, stated once so nobody has to re-derive it from the code:
+//
+//   - The channel is a CONE, not an annulus. There is no centrebody. Plasma
+//     fills the interior from the axis out to the wall.
+//   - r is distance from the thruster axis; z is axial distance from the
+//     anode face. The simulated domain is the r-z half-plane, and the wall is
+//     a surface of revolution about r = 0.
+//   - A point is inside the channel when 0 <= r <= wallRadiusAt(z).
+//   - divergenceAngleDeg is the FULL opening angle of the cone. The wall
+//     itself tilts by half that. Getting this wrong is a silent factor of two,
+//     so halfAngleRad() is the only place the conversion happens.
+//
+// Dimensions come from the team's CATIA half-section of the thruster.
+//
+// DCFHT Simulation Team
 //
 
-#ifndef URIMESHPRACTICE_CHANNELGEOMETRY_H
-#define URIMESHPRACTICE_CHANNELGEOMETRY_H
+#include "Constants.hpp"
 
 #include <cmath>
 #include <stdexcept>
-#include "Constants.hpp"
-
 
 struct ChannelGeometry {
-    double innerRadius;             //m, at z = 0 
-    double outerRadius;             //m, at z = 0
-    double length;                  //m
-    double totaldivergenceAngleDeg;      //half-angle, 30-75
+    double anodeRadius;          // m, wall radius at z = 0
+    double length;               // m, anode face to exit plane
+    double divergenceAngleDeg;   // FULL opening angle of the cone
 
-    // Minimum clearance the inboard wall must keep from the thruster axis.
-    // Not physics -- a guard so an impossible geometry fails loudly instead of
-    // producing a mesh with negative radii.
-    static constexpr double kMinAxisClearance = 0.002;  // m
+    // Largest radius the field data covers. The ANSYS export spans
+    // x in [-60, 60] mm, so the wall must stay inside that or the import
+    // has nothing to interpolate from at the exit plane.
+    static constexpr double kMaxFieldRadius = 0.060;  // m
 
-    double halfangleRad() const {
-        return 0.5 * totaldivergenceAngleDeg * ( constants::kPi/180.0);
+    double halfAngleRad() const {
+        return 0.5 * divergenceAngleDeg * (constants::kPi / 180.0);
     }
 
-    // Inboard wall tilts toward the axis, outboard wall tilts away, so the
-    // channel opens into a V with increasing z. Both tilt by the same angle.
-    double innerWallAt(double z) const {
-        return innerRadius - z*std::tan(halfangleRad());
-    }     //innerRadius - z*tan
-    double outerWallAt(double z) const {
-        return outerRadius + z*std::tan(halfangleRad());
-    }     //outerRadius + z*tan
-
-    double channelWidthAt(double z) const {
-        return outerWallAt(z) - innerWallAt(z);
+    // The single wall. Radius grows with z because the cone opens downstream.
+    double wallRadiusAt(double z) const {
+        return anodeRadius + z * std::tan(halfAngleRad());
     }
 
-    // Largest divergence angle this channel can take before the inboard wall
-    // reaches the axis clearance limit at the exit plane.
-    //
-    //   innerRadius - length*tan(theta) >= kMinAxisClearance
-    //   tan(theta) <= (innerRadius - kMinAxisClearance) / length
+    double exitRadius() const { return wallRadiusAt(length); }
+
+    // Flow area at an axial station, for mass-flux bookkeeping later.
+    double areaAt(double z) const {
+        const double r = wallRadiusAt(z);
+        return constants::kPi * r * r;
+    }
+
+    // Build a geometry from two measured radii instead of an angle, which is
+    // how the CATIA drawing gives it: radius at the anode, radius at the exit.
+    static ChannelGeometry fromRadii(double anodeR, double exitR, double len) {
+        if (len <= 0.0) throw std::invalid_argument("ChannelGeometry: length must be positive");
+        const double halfAngle = std::atan((exitR - anodeR) / len);
+        return ChannelGeometry{anodeR, len,
+                               2.0 * halfAngle * (180.0 / constants::kPi)};
+    }
+
+    // Largest FULL opening angle whose exit radius still fits the field data.
     double maxValidAngleDeg() const {
-        const double usable = innerRadius - kMinAxisClearance;
+        const double usable = kMaxFieldRadius - anodeRadius;
         if (usable <= 0.0) return 0.0;
-        return std::atan(usable / length) * (180.0 / constants::kPi) * 2;
+        return 2.0 * std::atan(usable / length) * (180.0 / constants::kPi);
     }
 
     bool isValid() const {
-        return innerRadius > 0.0
-            && outerRadius > innerRadius
+        return anodeRadius > 0.0
             && length > 0.0
-            && totaldivergenceAngleDeg >= 0.0
-            && innerWallAt(length) >= kMinAxisClearance;
+            && divergenceAngleDeg > 0.0
+            && divergenceAngleDeg < 180.0
+            && exitRadius() <= kMaxFieldRadius;
     }
 
     void validateOrThrow() const {
         if (!isValid()) {
             throw std::invalid_argument(
-                "ChannelGeometry: invalid channel -- inboard wall reaches the axis "
-                "before the exit plane, or radii/length are nonpositive");
+                "ChannelGeometry: invalid channel -- check that the radius and "
+                "length are positive and that the exit radius stays within the "
+                "field data extent");
         }
     }
-
 };
 
-// PLACEHOLDER dimensions, roughly BHT-200 scale. NOT measured, NOT confirmed.
-// Replace once Dr. White provides the real DCFHT geometry.
-// inline constexpr ChannelGeometry kPlaceholderGeometry{
-//     0.021,   // innerRadius, m
-//     0.028,   // outerRadius, m
-//     0.025,   // length, m
-//     30.0     // divergenceAngleDeg
-// };
-
-
-
-
-#endif //URIMESHPRACTICE_CHANNELGEOMETRY_H
+// Dimensions from the team's CATIA half-section: 10 mm wall radius at the
+// anode, 38.579 mm at the exit, over a 49.5 mm channel. Those three imply a
+// 30 degree half-angle, so 60 degrees full opening angle.
+inline const ChannelGeometry kDcfhtGeometry{0.010, 0.0495, 60.0};
